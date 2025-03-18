@@ -1,0 +1,24 @@
+{
+  "devDependencies": {
+    "html-minifier-terser": "^7.2.0",
+    "prettier": "^3.3.3",
+    "prettier-plugin-tailwindcss": "^0.6.6",
+    "rimraf": "^6.0.1",
+    "tailwindcss": "^3.4.12",
+    "terser": "^5.33.0",
+    "ncp": "^2.0.0"
+  },
+  "scripts": {
+    "serve": "bun tailwind:out-src ; bun serve.js",
+    "tailwind:serve": "bunx tailwindcss -i ./src/assets/stylesheets/globals.css -o ./src/assets/stylesheets/output.css --watch --minify",
+    "tailwind:out-src": "bunx tailwindcss -i ./src/assets/stylesheets/globals.css -o ./src/assets/stylesheets/output.css --minify",
+    "tailwind": "bunx tailwindcss -i ./src/assets/stylesheets/globals.css -o ./dist/assets/stylesheets/output.css --minify",
+    "lint": "bunx prettier . --w",
+    "lint:check": "bunx prettier . --c",
+    "clean": "bunx rimraf dist",
+    "minify:html": "bunx html-minifier-terser --file-ext html --collapse-whitespace --remove-comments --remove-empty-attributes --use-short-doctype --minify-js true --minify-css true --input-dir ./src --output-dir ./dist",
+    "minify:js": "bunx terser ./src/assets/javascript/service-worker.js -o ./dist/assets/javascript/service-worker.js --compress --mangle",
+    "minify": "bun minify:js ; bun minify:html",
+    "package": "bun clean ; bunx ncp src dist ; bun tailwind ; bun minify"
+  }
+}

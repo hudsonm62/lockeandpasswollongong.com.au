@@ -1,0 +1,54 @@
+name: Deploy to GitHub Pages
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+
+permissions: write-all
+concurrency:
+  group: deploy-ci
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: false
+    env:
+      ARTIFACT_NAME: site
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⚙️ Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Get Short SHA
+        uses: hudsonm62/short-sha@v1
+        id: sha
+
+      - name: ⚙️ Set Env Variable
+        run: echo "ARTIFACT_NAME=site-${{ steps.sha.outputs.sha }}-${{ github.run_number }}" >> $GITHUB_ENV
+
+      - name: 🍞 Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: 🧳 Install Bun Dependencies
+        run: bun install --frozen-lockfile
+
+      - name: ✨ Prettier Check
+        run: bunx prettier . --check
+        continue-on-error: true
+
+      - name: 🏗️ Build Website
+        run: bun package
+
+      - name: 🚀 Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: dist
+
+      - name: 🌐 Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: ${{ env.ARTIFACT_NAME }}

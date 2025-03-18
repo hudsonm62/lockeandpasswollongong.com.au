@@ -1,0 +1,39 @@
+name: Test Build-CI
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  build-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⚙️ Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Get Short SHA
+        uses: hudsonm62/short-sha@v1
+        id: sha
+
+      - name: 🍞 Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: 🧳 Install Bun Dependencies
+        run: bun install --frozen-lockfile
+
+      - name: ✨ Prettier Check (w/ Bunx)
+        run: bunx prettier . --check
+        continue-on-error: true
+
+      - name: 🏗️ Build Website
+        run: bun package
+
+      - name: ⬆ Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: dist
+          name: site-${{ steps.sha.outputs.sha }}-${{ github.run_number }}-test
+          compression-level: 9
+          retention-days: 90
