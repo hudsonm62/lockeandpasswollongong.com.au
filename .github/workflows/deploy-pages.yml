@@ -12,7 +12,6 @@ concurrency:
 
 jobs:
   deploy:
-    if: false
     env:
       ARTIFACT_NAME: site
     runs-on: ubuntu-latest
