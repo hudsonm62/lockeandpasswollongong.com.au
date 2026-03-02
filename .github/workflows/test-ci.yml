@@ -31,7 +31,7 @@ jobs:
         run: bun package
 
       - name: ⬆ Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           path: dist
           name: site-${{ steps.sha.outputs.sha }}-${{ github.run_number }}-test
